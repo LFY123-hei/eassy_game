@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>星露谷·学术合作规则答题</title>
+  <style>
+    /* 全局星露谷调性 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', 'Courier New', 'Press Start 2P', system-ui, monospace;
+    }
+
+    body {
+      background: #5f8b4b; /* 草地绿 */
+      background-image: 
+        radial-gradient(circle at 10% 20%, #7fa36b 2px, transparent 2px),
+        radial-gradient(circle at 90% 75%, #7fa36b 1px, transparent 1px),
+        linear-gradient(45deg, #3f6b2e 0%, #6f9f4f 100%);
+      background-size: 40px 40px, 60px 60px, 100% 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 10px 80px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* 游戏面板风格 */
+    .game-panel {
+      max-width: 860px;
+      width: 100%;
+      background: #fef9e8;
+      background-image: linear-gradient(0deg, #e7dbb7 0%, #fef9e8 15%, #fef9e8 85%, #d9cba4 100%);
+      border: 6px solid #8b6b4d;
+      border-radius: 42px 42px 32px 32px;
+      box-shadow: 0 12px 0 #4a3724, 0 16px 20px rgba(0, 0, 0, 0.4);
+      padding: 24px 20px 28px;
+      position: relative;
+      transition: all 0.1s;
+      margin-bottom: 24px;
+      z-index: 5;
+    }
+
+    /* 木制标题装饰 */
+    .game-panel::before {
+      content: "🌾 🐔 🌻";
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #5e3e1e;
+      color: #ffeaa5;
+      font-size: 1.2rem;
+      padding: 6px 28px;
+      border-radius: 100px;
+      letter-spacing: 8px;
+      box-shadow: inset 0 -3px 0 #3f2a0f, 0 4px 0 #2a1d0c;
+      font-weight: bold;
+      text-shadow: 2px 2px 0 #2a1d0c;
+      white-space: nowrap;
+    }
+
+    /* 题目卡片 */
+    .question-card {
+      background: #f5ebd2;
+      border: 4px solid #baa27a;
+      border-radius: 36px;
+      padding: 22px 18px 16px;
+      margin-bottom: 20px;
+      box-shadow: inset 0 -6px 0 #a0845a, 0 5px 0 #4e3e28;
+      position: relative;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #b45f2a;
+      color: #ffeab3;
+      font-weight: bold;
+      font-size: 0.85rem;
+      padding: 6px 16px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+      text-shadow: 1px 1px 0 #642e0e;
+      box-shadow: 0 4px 0 #642e0e;
+      margin-bottom: 16px;
+      border: 2px solid #fcd48e;
+    }
+
+    .q-title {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #2c1b0c;
+      text-shadow: 2px 2px 0 #d6b77a;
+      margin-bottom: 8px;
+      line-height: 1.3;
+      word-break: break-word;
+    }
+
+    .scenario {
+      background: #e6d9b8;
+      border-left: 14px solid #b48b4b;
+      padding: 14px 16px;
+      border-radius: 20px;
+      font-size: 1rem;
+      color: #1f1a0e;
+      margin: 10px 0 16px;
+      box-shadow: inset 0 0 0 2px #fbf3dd, 0 3px 0 #826e4e;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 16px 0 10px;
+    }
+
+    .option {
+      background: #f7f0db;
+      border: 3px solid #9a835a;
+      border-radius: 50px;
+      padding: 14px 22px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #2d2416;
+      box-shadow: 0 6px 0 #6b5b3e, 0 6px 8px rgba(0,0,0,0.15);
+      cursor: pointer;
+      transition: all 0.06s linear;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      word-break: break-word;
+      line-height: 1.4;
+    }
+
+    .option:hover {
+      background: #ffeeb5;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 0 #6b5b3e, 0 8px 10px rgba(0,0,0,0.2);
+    }
+
+    .option:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #6b5b3e;
+    }
+
+    .option.correct {
+      background: #b1d8a8;
+      border-color: #3c7a2b;
+      box-shadow: 0 6px 0 #2b5a1d, 0 6px 8px rgba(0,0,0,0.15);
+      color: #173d0a;
+    }
+
+    .option.wrong {
+      background: #e6b3b3;
+      border-color: #b13b3b;
+      box-shadow: 0 6px 0 #7a2424, 0 6px 8px rgba(0,0,0,0.15);
+      color: #4a1111;
+      opacity: 0.9;
+    }
+
+    /* 规则解读——像谷仓里的卷轴 */
+    .rule-box {
+      background: #fff4d6;
+      border: 4px dashed #b48b4b;
+      border-radius: 28px;
+      padding: 18px 16px;
+      margin: 22px 0 0;
+      box-shadow: inset 0 0 0 3px #fef1ce, 0 4px 0 #7e643e;
+      color: #2f281b;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .rule-box strong {
+      color: #a34f1b;
+      font-size: 1rem;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .rule-box span {
+      display: block;
+      margin-top: 6px;
+    }
+
+    /* 弹幕区 */
+    .danmaku-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 100;
+      overflow: hidden;
+    }
+
+    .danmaku-item {
+      position: absolute;
+      white-space: nowrap;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #fff9c4;
+      text-shadow: 2px 2px 0 #1e3a1e, 3px 3px 0 #00000055;
+      padding: 4px 12px;
+      background: rgba(76, 53, 28, 0.65);
+      border-radius: 40px;
+      border: 2px solid #ffd966;
+      backdrop-filter: blur(2px);
+      animation: danmakuMove linear forwards;
+      pointer-events: none;
+      letter-spacing: 0.5px;
+    }
+
+    @keyframes danmakuMove {
+      0% { transform: translateX(100vw); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* 底部操作栏 */
+    .footer-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 12px;
+      width: 100%;
+      max-width: 860px;
+    }
+
+    .btn-stardew {
+      background: #e6c27a;
+      border: 4px solid #6b4f2b;
+      border-radius: 40px;
+      padding: 12px 24px;
+      font-weight: 800;
+      font-size: 1rem;
+      color: #2c1d0b;
+      box-shadow: 0 7px 0 #4d3a20, 0 8px 10px rgba(0,0,0,0.2);
+      cursor: pointer;
+      transition: 0.06s linear;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-shadow: 1px 1px 0 #ffecb3;
+      letter-spacing: 0.5px;
+      flex: 0 0 auto;
+    }
+
+    .btn-stardew:active {
+      transform: translateY(5px);
+      box-shadow: 0 2px 0 #4d3a20;
+    }
+
+    .btn-stardew:hover {
+      background: #f7d98c;
+    }
+
+    .danmaku-input-area {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex: 1 1 280px;
+      min-width: 200px;
+    }
+
+    .danmaku-input-area input {
+      flex: 1;
+      padding: 12px 18px;
+      border-radius: 40px;
+      border: 4px solid #7b623d;
+      background: #fef7e4;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #2d1f0c;
+      outline: none;
+      box-shadow: inset 0 2px 6px #b3a07e;
+    }
+
+    .danmaku-input-area input:focus {
+      border-color: #d49b3b;
+      background: #fffdf2;
+    }
+
+    .send-btn {
+      background: #c49a5b;
+      border: 3px solid #634e2e;
+      border-radius: 50px;
+      padding: 12px 22px;
+      font-weight: 800;
+      color: #1f1608;
+      box-shadow: 0 5px 0 #4d3a20;
+      cursor: pointer;
+      transition: 0.05s linear;
+      white-space: nowrap;
+    }
+
+    .send-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #4d3a20;
+    }
+
+    /* 分享链接提示 */
+    .share-tip {
+      background: #e1cfaa;
+      border-radius: 30px;
+      padding: 8px 18px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #1c2c0d;
+      text-align: center;
+      border: 2px solid #a58b60;
+      box-shadow: inset 0 0 0 2px #f5e7c8;
+    }
+
+    /* 星星/装饰 */
+    .deco {
+      position: absolute;
+      font-size: 2rem;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    /* 响应式 */
+    @media (max-width: 600px) {
+      .game-panel { padding: 24px 12px 20px; border-radius: 30px; }
+      .q-title { font-size: 1.3rem; }
+      .scenario { font-size: 0.9rem; padding: 12px; }
+      .option { padding: 12px 14px; font-size: 0.9rem; }
+      .rule-box { font-size: 0.85rem; padding: 14px; }
+      .badge { font-size: 0.75rem; padding: 4px 12px; }
+      .btn-stardew { padding: 10px 16px; font-size: 0.9rem; }
+      .danmaku-item { font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 弹幕层 -->
+  <div class="danmaku-container" id="danmakuContainer"></div>
+
+  <!-- 主游戏面板 -->
+  <div class="game-panel" id="gamePanel">
+    <!-- 题目区域由JS动态渲染 -->
+    <div id="questionArea"></div>
+    <!-- 底部操作 -->
+    <div class="footer-bar">
+      <button class="btn-stardew" id="nextBtn">🌱 下一题</button>
+      <div class="danmaku-input-area">
+        <input type="text" id="danmakuInput" placeholder="发送弹幕... 一起吐槽" maxlength="40">
+        <button class="send-btn" id="sendDanmakuBtn">📨 发射</button>
+      </div>
+    </div>
+    <div class="share-tip" id="shareTip">
+      🔗 分享本页链接，召唤小伙伴一起答题
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // ---------- 题库数据 ----------
+      const questions = [
+        {
+          id: 2,
+          title: '导师的“温柔刀”——沟通透明规则',
+          scenario: '导师看完你的汇报，微笑着说：“你已经是这个领域的专家了。”你的科学问题是什么？“没有任何创新点。”——请问导师在干嘛？',
+          options: [
+            'A. 真诚夸赞，准备给你发绩效',
+            'B. 用的是“学术阴阳文学”，即温柔刀——意思是：你还没入门，回去重做',
+            'C. 和你探讨人生哲学',
+            'D. 欣赏你的松弛感'
+          ],
+          correctIndex: 1, // B
+          rule: '沟通要透明，拒绝潜台词。导师的“你已经是这个领域的专家了”是今年戳中无数硕博的爆梗——要求不明确、反馈不给到具体，是合作关系里最大的信息损耗。规则应当是：要什么说清楚，不行就直说重做，别让大家靠“破大防”猜心意。'
+        },
+        {
+          id: 3,
+          title: '底刊诱惑——发表与真伪期刊规则',
+          scenario: '你手里有篇小论文，怕投顶刊被拒。师兄神秘兮兮发来链接：“包录用，版面费3000，一月见刊，SCI二区。”你……',
+          options: [
+            'A. 冲了，一月见刊谁不爱，组会还能装一波',
+            'B. 先查期刊是否正规——是否为掠夺性期刊 / 水刊',
+            'C. 发底刊取代发顶刊，是新时代科研人的浪漫',
+            'D. 让师兄先打钱，我负责笑'
+          ],
+          correctIndex: 1,
+          rule: '发表要走正规渠道。2026年“底刊”成为热梗，本质是年轻人用戏仿抵抗“唯论文”焦虑；但现实中真去投掠夺性期刊 / 水刊，会带来声誉风险，甚至被认定为学术不端。合作发表还要约定成果归属、单位标注，都得知实。'
+        },
+        {
+          id: 4,
+          title: '「一键生成」的数据 数据真实与可追溯规则',
+          scenario: '你和小X合作课题，小X拍胸脯说“数据包在我身上”。半年后组会，导师问数据来源，小X说“AI跑的”一键生成”。你一查，14张图有11张是估算的，2张重复使用。这基本是2026年真实通报的现场复刻——你怎么办？',
+          options: [
+            'A. 反正图能看，发出去再说',
+            'B. 数据是合作的地基，必须核实来源、保留原始记录，“估算”不能当“实算”',
+            'C. 一键生成是新时代效率，导师不懂别乱说',
+            'D. 让AI背锅'
+          ],
+          correctIndex: 1,
+          rule: '数据要真实、可追溯。2026年南开大学、上海大学通报的多起案例，核心都是“处理未准确量化、用估算代替实算、图片重复使用”，结局是解聘、撤职。合作中：数据谁产生、谁核对、原始记录存哪，都要有据可查。'
+        },
+        {
+          id: 5,
+          title: '「牛马」的边界 导学关系边界规则',
+          scenario: '导师让你“帮忙”接送孩子、周五下班后做TA私活，还加一句“年轻人要有牛马精神”。你……',
+          options: [
+            'A. 主打一个松弛感，直接躺平装死',
+            'B. 先判断是否在职责范围；私事可委婉拒绝，学术指导与生活服务要分开',
+            'C. 脆皮大学生，一碰就碎，先病三天',
+            'D. 默默当一个成熟的牛马'
+          ],
+          correctIndex: 1,
+          rule: '导学是学术合作关系，不是人身依附。“牛马”“脆皮大学生”是大家的自嘲梗，但自嘲不等于认命。合理拒绝越界要求，既保护自己，也保护这段关系；涉及隐私、越界利益输送的要求，有理由说不。'
+        },
+        {
+          id: 6,
+          title: 'AI到底能用在哪—AI使用边界规则',
+          scenario: '你让AI一键输出”整段讨论和结论，直接贴进论文，还觉得效率飞起。院士沈树忠刚公开表态：AI可辅助文献检索、资料整理和语言表达，但“不能把AI生成的内容未经核实就作为自己的科学结论，更不能用AI替代研究者承担学术责任”。你的操作是？',
+          options: [
+            'A. AI都这么强了，为什么要自己写？',
+            'B. AI可以辅助，但数据、结论、责任必须由人来核实与承担；合作中使用AI要提前说清楚',
+            'C. 主打AI文学，反正审稿人看不出来',
+            'D. 让AI先去读个博'
+          ],
+          correctIndex: 1,
+          rule: 'AI是工具，责任在人。这是正在被写进各种学术规范的新“合作规则”——谁用了AI、用在哪个环节，要和团队约定并如实披露，别让“一键生成”变成“一键翻车”。'
+        },
+        {
+          id: 7,
+          title: '抢跑发稿，先发为赢？——合作成果首发权、抢先投稿规则',
+          scenario: '你和同门A合作，说好数据全部整理完毕、共同定稿之后再投稿。结果A趁着你国庆放假，单独把整理好的一部分数据先发了预印本，通讯作者还是导师，完全没提前和你商量。圈内人都说：科研就是“抢发内卷，先到先得”。你怎么看？',
+          options: [
+            'A. 科研抢分秒，抢到就是赚到，只能认栽',
+            'B. 赶紧去小红书挂人，写长文开锤，让他社死',
+            'C. 先把他预印本截图存好，回头我再单独发一篇背刺回去',
+            'D. 合作成果投稿、上传预印本需要所有合作者知情同意，私自抢先发布属于破坏合作约定，违背学术诚信'
+          ],
+          correctIndex: 3, // D
+          rule: '很多人觉得科研卷首发就可以不讲约定，但合作的前提是共识优先。预印本也是公开成果，只要包含你的贡献，投稿前必须共同商议。抢发不是厉害，是透支团队信任。内卷不能突破合作契约，不是“谁手快谁有理”。玩梗一句：可以卷科研速度，但不能搞“背刺式抢跑”。'
+        },
+        {
+          id: 8,
+          title: '参考文献“搭便车”—互引剧量、人情互引',
+          scenario: '隔壁课题组师兄来找你，友好提议：咱们互相引用对方论文，你引我、我引你大家一起把引用量刷上去，互相成全，主打一个科研人情局，很多人都在悄悄这么干。选项：',
+          options: [
+            'A. 好事！双向奔赴，直接答应',
+            'B. 可以，但是要悄悄引，不能让审稿人看见',
+            'C. 拒绝！无实质关联的人情互引、批量互刷引用属于不当自引／互引，属于学术不端风险行为',
+            'D. 先加微信，拉个互引群做大做强'
+          ],
+          correctIndex: 2, // C
+          rule: '引用的意义是学术脉络传承，不是人情交换。现在期刊、高校科研诚信核查，会重点筛查批量互引网络。合作引用，只引用真正相关、对你研究有支撑的文献，拒绝“科研搭子刷KPI”。玩梗一句：科研搭子可以互帮，不能一起“刷KPI踩红线”。'
+        },
+        {
+          id: 9,
+          title: '借样本/试剂，口头约定“事后挂名”—合作约定书面化问题',
+          scenario: '别的课题组同学找你合作，想用你课题组珍贵的临床样本，口头承诺：样本借用我，最后文章给你挂二作。没有任何文字记录，导师也不知情。',
+          options: [
+            'A. 口头承诺算数，都是科研人，主打一个信任',
+            'B. 先把样本给他，后面要是不给署名，我去组会闹',
+            'C. 口头约定风险极高，涉及样本、生物资源、署名，必须导师知情，最好提前书面约定贡献、署名、资源使用范围',
+            'D. 加价，要版面费分成'
+          ],
+          correctIndex: 2, // C
+          rule: '生物样本、菌株、试剂、测序数据都属于课题组核心资源，不是个人私物。很多科研纠纷都是“口头画饼署名”，事后翻脸不认账。合作资源交换、署名承诺，知情 + 书面留痕是保护双方的规则。玩梗一句：画饼式署名，最后大概率变成“学术画大饼”。'
+        }
+      ];
+
+      // 当前题目索引
+      let currentIndex = 0;
+      // 已选答案记录 (用于锁定选项)
+      let answered = false;
+
+      // DOM 元素
+      const questionArea = document.getElementById('questionArea');
+      const nextBtn = document.getElementById('nextBtn');
+      const danmakuContainer = document.getElementById('danmakuContainer');
+      const danmakuInput = document.getElementById('danmakuInput');
+      const sendDanmakuBtn = document.getElementById('sendDanmakuBtn');
+
+      // ---------- 渲染当前题目 ----------
+      function renderQuestion(index) {
+        const q = questions[index];
+        answered = false;
+
+        const html = `
+          <div class="question-card">
+            <div class="badge">📜 题${q.id} · 合作规则</div>
+            <div class="q-title">${q.title}</div>
+            <div class="scenario">${q.scenario}</div>
+            <div class="options" id="optionsContainer">
+              ${q.options.map((opt, i) => `
+                <div class="option" data-index="${i}" id="opt-${i}">
+                  ${opt}
+                </div>
+              `).join('')}
+            </div>
+            <div class="rule-box" id="ruleBox" style="display: none;">
+              <strong>🌿 规则解读</strong>
+              <span>${q.rule}</span>
+            </div>
+          </div>
+        `;
+
+        questionArea.innerHTML = html;
+
+        // 绑定选项点击事件
+        const optionEls = document.querySelectorAll('.option');
+        optionEls.forEach(el => {
+          el.addEventListener('click', (e) => {
+            if (answered) return; // 已经回答过
+            const selectedIdx = parseInt(el.dataset.index);
+            handleAnswer(selectedIdx, q.correctIndex);
+          });
+        });
+
+        // 更新下一题按钮文字
+        updateNextButtonText();
+      }
+
+      // 处理回答
+      function handleAnswer(selectedIdx, correctIdx) {
+        if (answered) return;
+        answered = true;
+
+        const optionEls = document.querySelectorAll('.option');
+        optionEls.forEach((el, idx) => {
+          if (idx === correctIdx) {
+            el.classList.add('correct');
+          } else if (idx === selectedIdx && idx !== correctIdx) {
+            el.classList.add('wrong');
+          }
+          // 禁止再点击
+          el.style.pointerEvents = 'none';
+        });
+
+        // 高亮正确答案（如果选错了也高亮正确选项）
+        if (selectedIdx !== correctIdx) {
+          // 正确选项已经有 correct 类，不需要额外操作
+        }
+
+        // 显示规则解读
+        const ruleBox = document.getElementById('ruleBox');
+        if (ruleBox) ruleBox.style.display = 'block';
+
+        // 发送一条弹幕庆祝（可选）
+        const q = questions[currentIndex];
+        let msg = '';
+        if (selectedIdx === correctIdx) {
+          msg = '✅ 答对啦！规则了然于心～';
+        } else {
+          msg = '❌ 哎呀，再看看规则解读吧🌱';
+        }
+        spawnDanmaku(msg, true); // 自己发的弹幕
+      }
+
+      // 更新下一题按钮文字
+      function updateNextButtonText() {
+        if (currentIndex === questions.length - 1) {
+          nextBtn.textContent = '🌻 重新开始';
+        } else {
+          nextBtn.textContent = '🌱 下一题';
+        }
+      }
+
+      // 下一题逻辑
+      function goToNextQuestion() {
+        if (currentIndex < questions.length - 1) {
+          currentIndex++;
+        } else {
+          // 全部完成，重新从第一题开始
+          currentIndex = 0;
+        }
+        renderQuestion(currentIndex);
+      }
+
+      // 初始化渲染
+      renderQuestion(0);
+
+      // 下一题按钮事件
+      nextBtn.addEventListener('click', goToNextQuestion);
+
+      // ---------- 弹幕系统 ----------
+      // 存储活跃弹幕（用于清理，可选）
+      const activeDanmakus = new Set();
+
+      // 生成弹幕
+      function spawnDanmaku(text, isSelf = false) {
+        if (!text || text.trim() === '') return;
+
+        const item = document.createElement('div');
+        item.className = 'danmaku-item';
+        // 随机垂直位置 10% ~ 85%
+        const top = Math.random() * 70 + 8;
+        item.style.top = top + '%';
+        item.textContent = text;
+
+        // 随机颜色变化 (暖色调)
+        const colors = ['#fff9c4', '#ffe082', '#ffcc80', '#f8bbd0', '#d1c4e9', '#c8e6c9'];
+        item.style.color = colors[Math.floor(Math.random() * colors.length)];
+        if (isSelf) {
+          item.style.background = 'rgba(180, 130, 50, 0.9)';
+          item.style.borderColor = '#ffb347';
+        }
+
+        // 动画持续时间 6~12秒 (速度)
+        const duration = 7 + Math.random() * 6;
+        item.style.animationDuration = duration + 's';
+
+        danmakuContainer.appendChild(item);
+        activeDanmakus.add(item);
+
+        // 动画结束后移除
+        item.addEventListener('animationend', () => {
+          item.remove();
+          activeDanmakus.delete(item);
+        });
+
+        // 如果弹幕太多，移除最早的 (防止性能问题)
+        if (activeDanmakus.size > 50) {
+          const first = activeDanmakus.values().next().value;
+          if (first && first.parentNode) {
+            first.remove();
+            activeDanmakus.delete(first);
+          }
+        }
+      }
+
+      // 发送弹幕
+      function sendDanmakuFromInput() {
+        const text = danmakuInput.value.trim();
+        if (text === '') return;
+        spawnDanmaku(text, true);
+        danmakuInput.value = '';
+      }
+
+      sendDanmakuBtn.addEventListener('click', sendDanmakuFromInput);
+      danmakuInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          sendDanmakuFromInput();
+        }
+      });
+
+      // 预设一些趣味弹幕，定时随机生成
+      const presetDanmakus = [
+        '导师的温柔刀我中过😭',
+        '掠夺性期刊真的坑！',
+        '数据可追溯太重要了',
+        '拒绝做牛马，从我做起',
+        'AI生成必须核实啊',
+        '预印本也要商量！',
+        '互引刷量是红线',
+        '口头署名翻车现场',
+        '学术合作要透明～',
+        '规则记牢，顺利毕业🎓',
+        '这个星露谷风格好可爱',
+        '学习到了！',
+        '转给同门看看'
+      ];
+
+      // 周期性发送随机弹幕 (5-10秒一次)
+      setInterval(() => {
+        // 50%概率发送，避免太频繁
+        if (Math.random() < 0.6) {
+          const randomMsg = presetDanmakus[Math.floor(Math.random() * presetDanmakus.length)];
+          spawnDanmaku(randomMsg, false);
+        }
+      }, 6500);
+
+      // 页面加载后立即来几条弹幕
+      setTimeout(() => {
+        spawnDanmaku('🌾 欢迎来到学术合作规则农场', false);
+        spawnDanmaku('一起来答题吧~', false);
+        spawnDanmaku('导师的温柔刀你中过吗', false);
+      }, 500);
+      setTimeout(() => {
+        spawnDanmaku('记得分享给小伙伴哦🔗', false);
+      }, 3000);
+
+      // 分享提示 (简单的复制链接)
+      const shareTip = document.getElementById('shareTip');
+      shareTip.addEventListener('click', () => {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+          const originalText = shareTip.innerHTML;
+          shareTip.innerHTML = '✅ 链接已复制，快分享给同门吧！';
+          setTimeout(() => {
+            shareTip.innerHTML = originalText;
+          }, 2000);
+        }).catch(() => {
+          // 降级
+          prompt('复制本页链接分享：', url);
+        });
+      });
+
+      // 让分享提示有手型
+      shareTip.style.cursor = 'pointer';
+    })();
+  </script>
+</body>
+</html>
